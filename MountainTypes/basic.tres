@@ -1,0 +1,78 @@
+[gd_resource type="Resource" script_class="MountainType" load_steps=13 format=3 uid="uid://mfp0jncja45l"]
+
+[ext_resource type="Script" uid="uid://ctm61ir67wn0i" path="res://Scripts/Utils/noise_range.gd" id="1_0re5d"]
+[ext_resource type="Script" uid="uid://b2j1ry3e2ftf5" path="res://Scripts/Resources/mountain_type.gd" id="1_3m7sd"]
+
+[sub_resource type="Resource" id="Resource_hscou"]
+script = ExtResource("1_0re5d")
+min = 15.0
+max = 20.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_0re5d"]
+script = ExtResource("1_0re5d")
+min = 40.0
+max = 50.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_kycof"]
+script = ExtResource("1_0re5d")
+min = 40.0
+max = 50.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_hnhm4"]
+script = ExtResource("1_0re5d")
+min = 3.0
+max = 5.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_xrham"]
+script = ExtResource("1_0re5d")
+min = 3.0
+max = 12.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_as5ir"]
+script = ExtResource("1_0re5d")
+min = 35.0
+max = 45.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_e0lus"]
+script = ExtResource("1_0re5d")
+min = 5.0
+max = 10.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_cul5d"]
+script = ExtResource("1_0re5d")
+min = 0.6
+max = 1.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_4isq4"]
+script = ExtResource("1_0re5d")
+min = 35.0
+max = 45.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_54sbo"]
+script = ExtResource("1_0re5d")
+min = 0.7
+max = 0.8
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[resource]
+script = ExtResource("1_3m7sd")
+taper_range = SubResource("Resource_54sbo")
+main_peak_width = SubResource("Resource_kycof")
+main_peak_length = SubResource("Resource_0re5d")
+main_peak_height = SubResource("Resource_hscou")
+sub_peak_count = SubResource("Resource_hnhm4")
+sub_peak_width = SubResource("Resource_4isq4")
+sub_peak_length = SubResource("Resource_as5ir")
+sub_peak_height = SubResource("Resource_xrham")
+sub_peak_offset = SubResource("Resource_e0lus")
+sub_peak_overlap_factor = SubResource("Resource_cul5d")
+metadata/_custom_type_script = "uid://b2j1ry3e2ftf5"

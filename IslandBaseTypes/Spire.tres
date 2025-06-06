@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="IslandBaseType" load_steps=8 format=3 uid="uid://3ym8b2wrgmnj"]
+
+[ext_resource type="Script" uid="uid://ctm61ir67wn0i" path="res://Scripts/Utils/noise_range.gd" id="1_rdtnv"]
+[ext_resource type="Script" uid="uid://duqudn4k05k8u" path="res://Scripts/Resources/island_base_type.gd" id="1_ynrqe"]
+
+[sub_resource type="Resource" id="Resource_k8y07"]
+script = ExtResource("1_rdtnv")
+min = 3.0
+max = 7.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_ki1rh"]
+script = ExtResource("1_rdtnv")
+min = 10.0
+max = 15.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_k7uo1"]
+script = ExtResource("1_rdtnv")
+min = 10.0
+max = 18.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_eru7t"]
+script = ExtResource("1_rdtnv")
+min = 0.8
+max = 1.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_rdtnv"]
+script = ExtResource("1_rdtnv")
+min = 0.1
+max = 0.3
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[resource]
+script = ExtResource("1_ynrqe")
+name = "Spire"
+layer_height_range = SubResource("Resource_k7uo1")
+layer_count_range = SubResource("Resource_ki1rh")
+taper_max_range = SubResource("Resource_eru7t")
+taper_noise_intensity_range = SubResource("Resource_rdtnv")
+base_offset_range = SubResource("Resource_k8y07")
+metadata/_custom_type_script = "uid://duqudn4k05k8u"

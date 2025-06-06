@@ -1,0 +1,69 @@
+[gd_scene load_steps=15 format=3 uid="uid://oi3oimcb5bn5"]
+
+[ext_resource type="PackedScene" uid="uid://qmgby2oyprbu" path="res://archipelago_generation.tscn" id="1_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://ndw466krl4oq" path="res://camera_rig.tscn" id="2_h2yge"]
+[ext_resource type="Material" uid="uid://b5kg6mffodlad" path="res://island_material_shaded.tres" id="3_1bvp3"]
+[ext_resource type="Script" uid="uid://bamxn78n54brw" path="res://Scripts/island_generation.gd" id="3_7mycd"]
+[ext_resource type="Script" uid="uid://ddn5v16dwm1kb" path="res://Scripts/mountain_generation.gd" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://duqudn4k05k8u" path="res://Scripts/Resources/island_base_type.gd" id="6_kek77"]
+[ext_resource type="Resource" uid="uid://t6g7jojc70pt" path="res://IslandBaseTypes/Mesa.tres" id="7_4c57u"]
+[ext_resource type="Resource" uid="uid://3ym8b2wrgmnj" path="res://IslandBaseTypes/Spire.tres" id="8_efxa6"]
+[ext_resource type="Resource" uid="uid://c6fg650x4vjh0" path="res://IslandShapeType/crescent.tres" id="9_dg77c"]
+[ext_resource type="Script" uid="uid://b8br74i4mnvns" path="res://Scripts/Resources/island_shape_type.gd" id="9_ycdy4"]
+[ext_resource type="Script" uid="uid://b2j1ry3e2ftf5" path="res://Scripts/Resources/mountain_type.gd" id="12_w48qg"]
+[ext_resource type="Resource" uid="uid://mfp0jncja45l" path="res://MountainTypes/basic.tres" id="13_w48qg"]
+
+[sub_resource type="Resource" id="Resource_dg77c"]
+script = ExtResource("3_7mycd")
+metadata/_custom_type_script = "uid://bamxn78n54brw"
+
+[sub_resource type="Resource" id="Resource_074og"]
+script = ExtResource("5_7mycd")
+material = ExtResource("3_1bvp3")
+metadata/_custom_type_script = "uid://ddn5v16dwm1kb"
+
+[node name="Main" type="Node3D"]
+
+[node name="ArchipelagoGeneration" parent="." instance=ExtResource("1_0xm2m")]
+grid_size = 200
+island_count = 1
+islandGen = SubResource("Resource_dg77c")
+mountainGen = SubResource("Resource_074og")
+islandBaseTypes = Array[ExtResource("6_kek77")]([ExtResource("7_4c57u"), ExtResource("8_efxa6")])
+islandShapeTypes = Array[ExtResource("9_ycdy4")]([ExtResource("9_dg77c")])
+mountainTypes = Array[ExtResource("12_w48qg")]([ExtResource("13_w48qg")])
+
+[node name="CameraRig" parent="." instance=ExtResource("2_h2yge")]
+max_radius = 1e+08
+zoom_speed = 2.5
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.736769, 0.544366, 0.401044, -0.506371, 0.0511815, 0.860795, 0.448062, -0.837285, 0.31336, 13.6813, 58.3311, 8.36154)
+light_color = Color(0.990648, 0.986728, 0.685305, 1)
+shadow_enabled = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.873577, 0.280465, -0.397747, 0, 0.817256, 0.576275, 0.486686, -0.503421, 0.713936, 0.0469499, 1.67498, 0.00355244)
+material_override = ExtResource("3_1bvp3")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 90.0
+grow_vertical = 0
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "34243243"
+placeholder_text = "seed"
+
+[node name="Button" type="Button" parent="CanvasLayer/HBoxContainer"]
+layout_mode = 2
+text = "generate"
+
+[connection signal="button_down" from="CanvasLayer/HBoxContainer/Button" to="ArchipelagoGeneration" method="_on_button_button_down"]

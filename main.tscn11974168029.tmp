@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3 uid="uid://oi3oimcb5bn5"]
+
+[ext_resource type="PackedScene" uid="uid://qmgby2oyprbu" path="res://archipelago_generation.tscn" id="1_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://ndw466krl4oq" path="res://camera_rig.tscn" id="2_h2yge"]
+[ext_resource type="Material" uid="uid://b5kg6mffodlad" path="res://island_material_shaded.tres" id="3_1bvp3"]
+
+[node name="Main" type="Node3D"]
+
+[node name="ArchipelagoGeneration" parent="." instance=ExtResource("1_0xm2m")]
+grid_size = 400
+island_spacing = 90
+island_count = 8
+island_radius_range_min = 60.0
+island_radius_range_max = 80.0
+island_wobble_range_min = 0.2
+island_wobble_range_max = 0.3
+island_segment_range_min = 10.0
+island_segment_range_max = 20.0
+island_layer_height_range_min = 12.0
+island_layer_height_range_max = 20.0
+island_layer_count_range_min = 3.0
+island_layer_count_range_max = 7.0
+mountain_radius_range_min = 30.0
+mountain_radius_range_max = 40.0
+mountain_segment_range_min = 7.0
+mountain_segment_range_max = 12.0
+mountain_layer_height_range_min = 8.0
+mountain_layer_height_range_max = 15.0
+mountain_layer_count_range_min = 2.0
+mountain_layer_count_range_max = 4.0
+island_material = ExtResource("3_1bvp3")
+
+[node name="CameraRig" parent="." instance=ExtResource("2_h2yge")]
+max_radius = 1e+08
+zoom_speed = 2.5
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.649011, 0.747437, 0.141855, -0.644862, 0.441545, 0.623852, 0.403654, -0.496364, 0.768561, 13.6813, 58.3311, 8.36154)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.873577, 0.280465, -0.397747, 0, 0.817256, 0.576275, 0.486686, -0.503421, 0.713936, 0.0469499, 1.67498, 0.00355244)
+material_override = ExtResource("3_1bvp3")

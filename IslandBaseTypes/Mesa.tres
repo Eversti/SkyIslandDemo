@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="IslandBaseType" load_steps=8 format=3 uid="uid://t6g7jojc70pt"]
+
+[ext_resource type="Script" uid="uid://ctm61ir67wn0i" path="res://Scripts/Utils/noise_range.gd" id="1_tp8h3"]
+[ext_resource type="Script" uid="uid://duqudn4k05k8u" path="res://Scripts/Resources/island_base_type.gd" id="2_4kdgo"]
+
+[sub_resource type="Resource" id="Resource_joten"]
+script = ExtResource("1_tp8h3")
+min = 3.0
+max = 7.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_ki1rh"]
+script = ExtResource("1_tp8h3")
+min = 8.0
+max = 15.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_k7uo1"]
+script = ExtResource("1_tp8h3")
+min = 6.0
+max = 8.0
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_eru7t"]
+script = ExtResource("1_tp8h3")
+min = 0.2
+max = 0.45
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[sub_resource type="Resource" id="Resource_tp8h3"]
+script = ExtResource("1_tp8h3")
+min = 0.0
+max = 0.1
+metadata/_custom_type_script = "uid://ctm61ir67wn0i"
+
+[resource]
+script = ExtResource("2_4kdgo")
+name = "Mesa"
+layer_height_range = SubResource("Resource_k7uo1")
+layer_count_range = SubResource("Resource_ki1rh")
+taper_max_range = SubResource("Resource_eru7t")
+taper_noise_intensity_range = SubResource("Resource_tp8h3")
+base_offset_range = SubResource("Resource_joten")
+metadata/_custom_type_script = "uid://duqudn4k05k8u"

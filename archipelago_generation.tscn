@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://qmgby2oyprbu"]
+
+[ext_resource type="Script" uid="uid://vmxylsnstfwo" path="res://Scripts/archipelago_generation.gd" id="1_gtd2p"]
+
+[node name="ArchipelagoGeneration" type="Node3D"]
+script = ExtResource("1_gtd2p")

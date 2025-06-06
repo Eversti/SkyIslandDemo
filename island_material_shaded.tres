@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b5kg6mffodlad"]
+
+[ext_resource type="Shader" uid="uid://fe5utm2hrrap" path="res://island_height_based.gdshader" id="1_cyj51"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_cyj51")
+shader_parameter/top_color = Color(0.635597, 0.743883, 0.203591, 1)
+shader_parameter/side_color = Color(0.31802, 0.31802, 0.31802, 1)
