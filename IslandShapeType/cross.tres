@@ -1,95 +1,95 @@
-[gd_resource type="Resource" script_class="IslandShapeType" load_steps=20 format=3 uid="uid://c6fg650x4vjh0"]
+[gd_resource type="Resource" script_class="IslandShapeType" load_steps=20 format=3 uid="uid://b0x7sydnryx3u"]
 
-[ext_resource type="Script" uid="uid://duqudn4k05k8u" path="res://Scripts/Resources/island_base_type.gd" id="1_1mr30"]
-[ext_resource type="Script" uid="uid://ctm61ir67wn0i" path="res://Scripts/Utils/noise_range.gd" id="1_cjxyq"]
-[ext_resource type="Script" uid="uid://b8br74i4mnvns" path="res://Scripts/Resources/island_shape_type.gd" id="1_eegm3"]
+[ext_resource type="Script" uid="uid://b8br74i4mnvns" path="res://Scripts/Resources/island_shape_type.gd" id="1_8cdgq"]
+[ext_resource type="Script" uid="uid://ctm61ir67wn0i" path="res://Scripts/Utils/noise_range.gd" id="1_s2tcd"]
+[ext_resource type="Script" uid="uid://duqudn4k05k8u" path="res://Scripts/Resources/island_base_type.gd" id="2_0hbki"]
 
 [sub_resource type="Resource" id="Resource_k623f"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 3.0
 max = 4.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_ukmme"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 50.0
 max = 70.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_2c00j"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.15
 max = 0.2
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_rwjq3"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.65
 max = 1.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_jbj4o"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.0
 max = 1.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_iljtn"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 5.0
 max = 10.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_btmeg"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.3
 max = 0.6
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_t3xs0"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 2.0
 max = 3.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_ss4gk"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 15.0
 max = 35.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_neaqv"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.15
 max = 0.2
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_mb7tp"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.65
 max = 1.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_xw1fu"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.0
 max = 1.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_0s0j4"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 5.0
 max = 10.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [sub_resource type="Resource" id="Resource_mb4fk"]
-script = ExtResource("1_cjxyq")
+script = ExtResource("1_s2tcd")
 min = 0.25
 max = 0.5
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
-[sub_resource type="Resource" id="Resource_87uy7"]
-script = ExtResource("1_1mr30")
+[sub_resource type="Resource" id="Resource_cs28o"]
+script = ExtResource("2_0hbki")
 points_per_peak = 10
 main_peak_indices = Array[int]([0])
 main_peak_count = SubResource("Resource_k623f")
@@ -112,18 +112,18 @@ sub_peak_size_scale_mult_range = Vector2(0.5, 0.6)
 sub_peak_size_scale_mult_addition_rate = 0.2
 metadata/_custom_type_script = "uid://duqudn4k05k8u"
 
-[sub_resource type="Resource" id="Resource_1mr30"]
-script = ExtResource("1_cjxyq")
-min = 0.65
+[sub_resource type="Resource" id="Resource_0hbki"]
+script = ExtResource("1_s2tcd")
+min = 0.75
 max = 1.0
 metadata/_custom_type_script = "uid://ctm61ir67wn0i"
 
 [resource]
-script = ExtResource("1_eegm3")
-name = "crescent"
-cluster_size = Array[Vector2]([Vector2(80, 80), Vector2(80, 80), Vector2(80, 80)])
-cluster_position = Array[Vector2]([Vector2(0, 30), Vector2(-40, 0), Vector2(40, 0)])
-max_cluster_points = Array[int]([20, 20, 20])
-cluster_jitter_range = SubResource("Resource_1mr30")
-base = SubResource("Resource_87uy7")
+script = ExtResource("1_8cdgq")
+name = "Cross"
+cluster_size = Array[Vector2]([Vector2(100, 100), Vector2(80, 60), Vector2(80, 60), Vector2(60, 80), Vector2(60, 80)])
+cluster_position = Array[Vector2]([Vector2(0, 0), Vector2(-50, 0), Vector2(50, 0), Vector2(0, -50), Vector2(0, 50)])
+max_cluster_points = Array[int]([20, 20, 20, 20, 20])
+cluster_jitter_range = SubResource("Resource_0hbki")
+base = SubResource("Resource_cs28o")
 metadata/_custom_type_script = "uid://b8br74i4mnvns"

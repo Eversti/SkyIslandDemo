@@ -24,36 +24,36 @@ func generate_heatmap(border_points, resolution = 1.0):
 		"height": height,
 		"aabb": aabb,
 		"border": border_points,
-		"resolution": resolution
+		"resolution": resolution,
+		"masked_positions": [],
 	}
 
-func score_heatmap(data, border_points, seed):
+func score_heatmap(data):
 	var positions = data["positions"]
 	var heatmap = data["heatmap"]
+	var border_points = data["border"]
 	var aabb = data["aabb"]
-	var center = aabb.position + aabb.size / 2.0
-	var noise = FastNoiseLite.new()
-	noise.seed = seed
-	noise.frequency = 0.1
-	
+	var masked = data["masked_positions"]
+	var mask_falloff_distance = 60.0  # tweak this for spread sensitivity
+
 	for i in positions.size():
 		var p = positions[i]
-
-		# 1. Distance from border
-		var closest_dist = INF
-		for b in border_points:
-			closest_dist = min(closest_dist, p.distance_to(b))
-		closest_dist = clamp(closest_dist / 50.0, 0.0, 1.0)  # normalize
 		
-		# 2. Centrality
-		var centrality = 1.0 - clamp(p.distance_to(center) / (aabb.size.length() * 0.5), 0.0, 1.0)
+		if !Geometry2D.is_point_in_polygon(p, border_points) or masked.has(p):
+			heatmap[i] = 0
+			continue
 
-		# 3. Noise (for variety)
-		var noise_val = (noise.get_noise_2d(p.x, p.y) + 1.0) * 0.5
+		var closest_border_dist = INF
+		for b in border_points:
+			closest_border_dist = min(closest_border_dist, p.distance_to(b))
+		closest_border_dist = clamp(closest_border_dist / 50.0, 0.0, 1.0)
 
-		# Combine scores with weights
-		var score = 0.5 * closest_dist + 0.3 * centrality + 0.2 * noise_val
-		heatmap[i] = score
+		var dist_to_masked = INF
+		for m in masked:
+			dist_to_masked = min(dist_to_masked, p.distance_to(m))
+		var mask_score = clamp(dist_to_masked / mask_falloff_distance, 0.0, 1.0)
+
+		heatmap[i] = 0.5 * closest_border_dist + 0.5 * mask_score
 
 func get_heatmap_index(pos, heatmap_data):
 	var resolution = heatmap_data["resolution"]
@@ -90,8 +90,10 @@ func sample_from_heatmap(
 		var rng = RandomNumberGenerator.new()
 		rng.seed = seed
 		shuffle_array(candidates, rng)
-
-	return candidates[0]
+	
+	if candidates.size() > 0:
+		return candidates[0]
+	return []
 
 
 func shuffle_array(arr, rng):
@@ -101,51 +103,98 @@ func shuffle_array(arr, rng):
 		arr[i] = arr[j]
 		arr[j] = temp
 		
+func is_valid(index, heatmap, positions, border, min_score):
+	if index >= positions.size(): return false
+	var pos = positions[index]
+	return Geometry2D.is_point_in_polygon(pos, border) and heatmap[index] >= min_score
 
-func distance_to_border(heatmap, position):
-	var closest_dist = INF
-	for b in heatmap["border"]:
-		closest_dist = min(closest_dist, position.distance_to(b))
+func get_max_bounding_box_at_point(data, center, min_score, max_steps, max_ratio):
+	var resolution = data["resolution"]
+	var positions = data["positions"]
+	var heatmap = data["heatmap"]
+	var width = data["width"]
+	var height = data["height"]
+	var border = data["border"]
+	var aabb_pos = data["aabb"].position
 	
-	return closest_dist
+	var index = positions.find(center)
+	var left = 0
+	var right = 0
+	var up = 0
+	var down = 0
 
-func get_max_radius(heatmap, position, max_radius, threshold):
-	var size = Vector2(heatmap["width"], heatmap["height"])
-	var max_r = 0
+	var growing = true
+	while growing:
+		growing = false
+		var box_width = 1+positions[index+right].x - positions[index-left].x
+		var box_height = 1+positions[index+up*width].y - positions[index-down*width].y
+
+		if left < max_steps and box_width / box_height <= max_ratio:
+			var valid = true
+			for dy in range(-down, up + 1):
+				if not is_valid(index - (left + 1) + width * dy, heatmap, positions, border, min_score):
+					valid = false
+					break
+			if valid:
+				left += 1
+				growing = true
+
+		if right < max_steps and box_width / box_height <= max_ratio:
+			var valid = true
+			for dy in range(-down, up + 1):
+				if not is_valid(index + (right + 1) + width * dy, heatmap, positions, border, min_score):
+					valid = false
+					break
+			if valid:
+				right += 1
+				growing = true
+
+		if up < max_steps and box_height / box_width <= max_ratio:
+			var valid = true
+			for dx in range(-left, right + 1):
+				if not is_valid(index + dx + (up + 1) * width, heatmap, positions, border, min_score):
+					valid = false
+					break
+			if valid:
+				up += 1
+				growing = true
+
+		if down < max_steps and box_height / box_width <= max_ratio:
+			var valid = true
+			for dx in range(-left, right + 1):
+				if not is_valid(index + dx - (down + 1) * width, heatmap, positions, border, min_score):
+					valid = false
+					break
+			if valid:
+				down += 1
+				growing = true
 	
-	for r in range(1, max_radius + 1):
-		for angle in range(0, 360, 5):
-			var offset = Vector2(cos(deg_to_rad(angle)) * r, sin(deg_to_rad(angle)) * r)
-			var check_pos = position + offset
-			var index = get_heatmap_index(check_pos, heatmap)
-			if index == -1:
-				return max_r
-			else:
-				if heatmap["heatmap"][index] < threshold:
-					return max_r
-			if not Geometry2D.is_point_in_polygon(check_pos, heatmap["border"]):
-				return max_r
-		max_r = r
-	return max_r
+	var box_width =  positions[index+right].x - positions[index-left].x
+	var box_height = positions[index+up*width].y - positions[index-down*width].y
 	
-func write_circle_to_heatmap(heatmap_data, center, radius):
-	var heatmap = heatmap_data["heatmap"]
-	var positions = heatmap_data["positions"]
-	var width = heatmap_data["width"]
-	var height = heatmap_data["height"]
-	var aabb = heatmap_data["aabb"]
+	var size = Vector2(box_width, box_height)
+	var offset = positions[index - left - down * width]
+	return Rect2(offset, size)
+	
+func mask_heatmap(data, polygon, offset, scale_multiplier):
+	for i in range(polygon.size()):
+		var point = polygon[i] * scale_multiplier + offset
+		polygon[i] = point
 
-	var resolution = heatmap_data["resolution"]
-	var radius_sq = radius * radius
+	var masked_positions = []
 
-	for y in range(height):
-		for x in range(width):
-			var index = y * width + x
-			var pos = positions[index]
-			
-			var dist_sq = center.distance_squared_to(pos)
-			if dist_sq <= radius_sq:
-				var dist = sqrt(dist_sq)
-				var penalty = 1.0 - (dist / radius)  # center = 0, edge = 1
-				var score = penalty  # so closer = lower score
-				heatmap[index] = clamp(score, 0.0, heatmap[index])  # keep lowest score
+	for i in data["positions"].size():
+		var p = data["positions"][i]
+		if Geometry2D.is_point_in_polygon(p, polygon):
+			data["heatmap"][i] = 0
+			masked_positions.append(p)
+	data["masked_positions"].append_array(masked_positions)
+
+
+func usable_cells(data, min_score):
+	var heatmap = data["heatmap"]
+	var total_usable_cells = 0
+	for i in heatmap.size():
+		if heatmap[i] >= min_score:
+			total_usable_cells += 1
+	return total_usable_cells

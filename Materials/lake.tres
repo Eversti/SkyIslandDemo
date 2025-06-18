@@ -1,0 +1,32 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=3 uid="uid://bij0fig46f3a3"]
+
+[ext_resource type="Shader" uid="uid://mxvcnbo46pwj" path="res://Shaders/water.gdshader" id="1_ghi6k"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_w52bn"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_l3114"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("FastNoiseLite_w52bn")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ghi6k"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_w52bn"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("FastNoiseLite_ghi6k")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ghi6k")
+shader_parameter/water_color = Color(0.195726, 0.395428, 0.896442, 1)
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/noise_text = SubResource("NoiseTexture2D_w52bn")
+shader_parameter/distortion_text = SubResource("NoiseTexture2D_l3114")
+shader_parameter/noise_intensity = 0.47
+shader_parameter/distortion_intensity = 0.525
+shader_parameter/foam_threshold = 0.35
+shader_parameter/border_width = 0.225
+shader_parameter/time_speed = 0.5

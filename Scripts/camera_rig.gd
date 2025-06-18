@@ -24,6 +24,7 @@ func _unhandled_input(event):
 			radius = min(max_radius, radius + zoom_speed)
 
 func _process(delta):
+	camera.size = radius  # Radius acts like "zoom level" here
 	var x = radius * cos(angle_x) * sin(angle_y)
 	var y = radius * sin(angle_x)
 	var z = radius * cos(angle_x) * cos(angle_y)

@@ -1,7 +1,8 @@
 class_name Island
 extends Resource
 
-var size: Vector2
-var base_type: IslandBaseType
-var shape_type: IslandShapeType
-var heatmap: Dictionary
+var border
+var heatmap
+var debug_map
+var max_dist_from_center
+var index

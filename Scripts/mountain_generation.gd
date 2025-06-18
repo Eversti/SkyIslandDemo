@@ -1,10 +1,5 @@
 class_name MountainGen
-extends Resource
-
-@export_group("Other")
-@export var material: Material
-
-var concaveHull = ConcaveHull.new()
+extends Node
 
 func generate_irregular_top_and_bottom_planes(seed, base_radius, radius_reduction_rate, points_per_piece, taper):
 	var rng = RandomNumberGenerator.new()
@@ -331,12 +326,10 @@ func generate_mesh_with_irregular_planes(noise, mountain_index, type, max_radius
 	
 	var mountain = MeshInstance3D.new()
 	mountain.mesh = mesh
-	mountain.material_override = material
 		
 	return mountain
 
 func generate_bevel_triangles(seed, border):
-	var rng = RandomNumberGenerator.new()
 	var count = border.size()
 	
 	var bevel_triangles = []
@@ -350,9 +343,7 @@ func generate_bevel_triangles(seed, border):
 		var v2 = (next - current).normalized()
 		var cross = v1.cross(v2)
 		
-		rng.seed += 1
-		var chance = rng.randf()
-		if chance < 0.5 and bevel_indices.find((i-1+count)%count) == -1 and bevel_indices.find((i+1)%count) and cross < 0:
+		if bevel_indices.find((i-1+count)%count) == -1 and bevel_indices.find((i+1)%count) and cross < 0:
 			bevel_indices.append(i)
 			
 			bevel_triangles.append((i-1+count)%count)
@@ -389,42 +380,65 @@ func generate_bevel_triangles(seed, border):
 	bevel_triangles.append_array(triangles)
 	return [bevel_indices, bevel_triangles]
 
-func generate_ellipse_points(noise, index, count, width, height):
+func generate_ellipse_points(noise, index, count, width, height, position, jitter):
 	var result = []
 	for i in count:
-		var angle = noise.get_noise_1d(index*3+i) * TAU
-		var range = NoiseRange.new()
-		range.min = 0.85
-		range.max = 1
-		var radius = range.get_value(noise, index+i)
-		var x = cos(angle) * width/2 * radius
-		var y = sin(angle) * height/2 * radius
-		result.append(Vector2(x, y))
+		var angle = float(i)/float(count) * TAU
+		var jitter_val = jitter.get_value(noise, index+i)
+		var x = cos(angle) * width/2 * jitter_val
+		var y = sin(angle) * height/2 * jitter_val
+		result.append(Vector2(x, y) + position)
 	return result
 
-func generate_plane(noise, index, size, gen_points):
-	var width = size.x
-	var height = size.y
-	var center = Vector2.ZERO
-	
-	var points = generate_ellipse_points(noise, index, gen_points, width, height)
+func generate_mountain_shape(noise, index, count, scale_range, offset_range, jitter, outer_size, attempt_limit = 100, offset_data = [], min_offset_dist=0):
+	for i in range(attempt_limit):
+		var width = outer_size.x * scale_range.get_value(noise, 432+index+i)
+		var height = outer_size.y * scale_range.get_value(noise, -13-index-i)
+		var widthRange = NoiseRange.new((outer_size.x - width)/float(2) * offset_range.x, (outer_size.x - width)/float(2) * offset_range.y)
+		var heightRange = NoiseRange.new((outer_size.y - height)/float(2) * offset_range.x, (outer_size.y - height)/float(2) * offset_range.y)
+		
+		var offset = Vector2(widthRange.get_bi_range_value(noise, .234+index+i), heightRange.get_bi_range_value(noise, -0.23-index-i))
+		var attempts = 0
+		if offset_data.size() > 0:
+			var valid = false
+			while !valid and attempts < attempt_limit:
+				attempts += 1
+				valid = true
+				var tryoffset = Vector2(widthRange.get_bi_range_value(noise, 0.43+index+i+attempts), heightRange.get_bi_range_value(noise, -0.23-index-i-attempts))
+				for o in offset_data:
+					var diff = o.distance_to(tryoffset)
+					if diff < min_offset_dist:
+						valid = false
+						break
+				if valid:
+					offset = tryoffset
+		
+		var inner = generate_ellipse_points(noise, index*25+i, count, width, height, offset, jitter)
+		var outerBoundary = Rect2(-outer_size*0.5, outer_size)
+		var innerSize = Vector2(width, height)
+		var innerRect = Rect2(offset-innerSize*0.5, innerSize)
+		if outerBoundary.encloses(innerRect):
+			offset_data.append(offset)
+			return [inner, offset]
+	return []
+
+func generate_plane(noise, index, points):
 	var hull = Geometry2D.convex_hull(points)
 	hull.resize(hull.size()-1)
-	var smooth_border = SmoothPolygon.chaikin_smooth(hull, 1, 20)
+	#var smooth_border = SmoothPolygon.chaikin_smooth(hull, 1, 5)
 	#print("index: " + str(index) + "\nhull: " + str(hull) + "\nsmooth: " + str(smooth_border))
 	
 	var plane = {}
-	var triangulation = generate_bevel_triangles(seed, smooth_border)
+	var triangulation = generate_bevel_triangles(seed, hull)
 	
-	plane["points"] = smooth_border
+	plane["points"] = hull
 	plane["bevel_indices"] = triangulation[0]
 	plane["triangles"] = triangulation[1]
 	return plane
 
-func generate_mountain_mesh(noise, mountain_index, size, height, taper, offset, top_rotation):
+func generate_mountain_mesh(noise, mountain_index, plane, height, taper, top_offset, top_rotation):
 	var rng = RandomNumberGenerator.new()
 	rng.seed = noise.seed + mountain_index
-	var plane = generate_plane(noise, mountain_index, size, 15)
 	var points = plane["points"]
 	var triangles = plane["triangles"]
 	var bevel_indices = plane["bevel_indices"]
@@ -447,7 +461,6 @@ func generate_mountain_mesh(noise, mountain_index, size, height, taper, offset, 
 	vertex_map[layer] = []
 	for point in range(points.size()):
 		var vertex = Vector3(points[point].x, 0, points[point].y)
-		vertex += Vector3(offset.x, 0, offset.y)
 		vertex_index_map[layer].append(current_index)
 		vertex_map[layer].append(vertex)
 		current_index += 1
@@ -463,14 +476,12 @@ func generate_mountain_mesh(noise, mountain_index, size, height, taper, offset, 
 		sum += Vector3(p.x, 0, p.y)
 	var center = sum / points.size()
 	center.y = yPos 
-	var top_offset = Vector3(rng.randf_range(-2, 2), 0, rng.randf_range(-2, 2))
 	
 	for point in range(points.size()):
 		var vertex = Vector3(points[point].x, 0, points[point].y)
 		vertex *= t_max
 		vertex.y = layer_height * layer
-		vertex += Vector3(offset.x, 0, offset.y)
-		vertex += top_offset
+		vertex += Vector3(top_offset.x, 0, top_offset.y)
 		var local = vertex - center
 		vertex = top_rotation * local + center
 		vertex_index_map[layer].append(current_index)
@@ -586,55 +597,65 @@ func generate_mountain_mesh(noise, mountain_index, size, height, taper, offset, 
 	st.generate_normals()
 	#st.generate_tangents()
 	var mesh = st.commit()
-	
-	var mountain = MeshInstance3D.new()
-	mountain.mesh = mesh
-	mountain.material_override = material
 		
-	return mountain
+	return mesh
 
 func generate_mountains(noise, mountain_index, type, max_size):
 	var mountains = []
+	var all_points = []
+	var axisRange = NoiseRange.new(0.05, 1.0)
 	
-	var main_peak_size = Vector2(type.main_peak_width.get_value(noise, mountain_index), type.main_peak_length.get_value(noise, mountain_index))
-	var main_peak_height = type.main_peak_height.get_value(noise, mountain_index)
-	var taper = type.taper_range.get_value(noise, mountain_index)
+	var main_peak_height = type.main_peak_height.get_value(noise, 98.2+mountain_index)
+	var taper = type.main_peak_taper_range.get_value(noise, 54.4+mountain_index)
+	var angle = deg_to_rad(type.main_peak_top_rotation_angle_range.get_bi_range_value(noise, mountain_index))
+	var axis = Vector3(axisRange.get_bi_range_value(noise, 0.32+mountain_index), 0, axisRange.get_bi_range_value(noise, -0.123-mountain_index)).normalized()
+	var rotation = Basis(axis, angle)
+	var top_offset = Vector2(type.main_peak_taper_offset_range.get_bi_range_value(noise, 0.12+mountain_index), type.main_peak_taper_offset_range.get_bi_range_value(noise, -0.43-mountain_index))
+	var shape = generate_mountain_shape(noise, mountain_index, type.gen_points, type.main_peak_size_scale_mult_range, Vector2(0, 0), type.jitter_range, max_size, 100)
+	var points = shape[0]
+	var plane = generate_plane(noise, mountain_index, points)
 	
-	mountains.append(generate_mountain_mesh(noise, mountain_index, main_peak_size, main_peak_height, taper, Vector2.ZERO, Basis(Vector3.UP, 0)))
+	var main = generate_mountain_mesh(noise, mountain_index, plane, main_peak_height, taper, top_offset, rotation)
+	all_points.append_array(plane["points"])
 	
 	var count = int(round(type.sub_peak_count.get_value(noise, mountain_index)))
-	
-	var subdata = []
+	var height_data = []
+	var offset_data = []
 	
 	for i in range(1, count+1):
-		var sub_peak_size = Vector2(type.sub_peak_width.get_value(noise, mountain_index+i), type.sub_peak_length.get_value(noise, mountain_index+i))
-		taper = type.taper_range.get_value(noise, mountain_index+i)
-		var sub_peak_height
-		var offset
+		var sub_peak_height = (type.sub_peak_height.max + type.sub_peak_height.min) / float(2)
 		
 		var attempts = 0
 		var valid = false
 		while !valid and attempts < 1000 :
-			var try_offset = Vector2(type.sub_peak_offset.get_bi_range_value(noise, mountain_index+i+attempts), type.sub_peak_offset.get_bi_range_value(noise, mountain_index-i-attempts))
 			var try_height = type.sub_peak_height.get_value(noise, mountain_index+i+attempts)
 			valid = true
 			attempts += 1
-			for sub in subdata:
-				var offset_dist = sub.offset.distance_to(try_offset)
-				var height_diff = abs(sub.height - try_height)
-				if offset_dist < 3 or height_diff < 1:
+			for sub in height_data:
+				var height_diff = abs(sub - try_height)
+				if height_diff < type.sub_peak_min_height_diff:
 					valid = false
 					break
 			if valid:
 				sub_peak_height = try_height
-				offset = try_offset
-				subdata.append({ "offset": try_offset, "height": try_height })
+				height_data.append(try_height)
 		
-		var max_tilt_angle = 15 # degrees, tweak to taste
-		var angle = deg_to_rad(randf_range(-max_tilt_angle, max_tilt_angle))
-		var axis = Vector3(randf_range(-1, 1), 0, randf_range(-1, 1)).normalized()
-		var rotation = Basis(axis, angle)
+		taper = type.sub_peak_taper_range.get_value(noise, .45+mountain_index+i)
+		angle = deg_to_rad(type.sub_peak_top_rotation_angle_range.get_bi_range_value(noise, 0.34+mountain_index+i))
+		axis = Vector3(axisRange.get_bi_range_value(noise, 0.32+mountain_index+i), 0, axisRange.get_bi_range_value(noise, -0.123-mountain_index-i)).normalized()
+		rotation = Basis(axis, angle)
+		shape = generate_mountain_shape(noise, mountain_index+i, type.gen_points, type.sub_peak_size_scale_mult_range, type.sub_peak_offset, type.jitter_range, max_size, 100, offset_data, type.sub_peak_min_offset_distance)
+		points = shape[0]
+		var offset = shape[1]
+		if type.taper_direction_same_as_offset:
+			top_offset = offset.normalized() * type.sub_peak_taper_offset_range.get_value(noise, 0.134+mountain_index+i)
+		else:
+			top_offset = Vector2(type.sub_peak_taper_offset_range.get_bi_range_value(noise, 0.134+mountain_index+i), type.sub_peak_taper_offset_range.get_bi_range_value(noise, -0.24-mountain_index-i))
+		plane = generate_plane(noise, mountain_index+i, points)
+		mountains.append(generate_mountain_mesh(noise, mountain_index+i, plane, sub_peak_height, taper, top_offset, rotation))
+		all_points.append_array(plane["points"])
 		
-		mountains.append(generate_mountain_mesh(noise, mountain_index+i, sub_peak_size, sub_peak_height, taper, offset, rotation))
-		
-	return mountains
+	var mountain_hull = Geometry2D.convex_hull(all_points)
+	mountain_hull.resize(mountain_hull.size()-1)
+	
+	return [main, mountains, mountain_hull]

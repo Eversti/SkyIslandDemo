@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://ns8i6lhqt7gp"]
+
+[ext_resource type="Script" uid="uid://ceqrb0gltonn3" path="res://Scripts/Utils/heatmap_debug.gd" id="1_53gmh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_53gmh"]
+vertex_color_use_as_albedo = true
+
+[node name="HeatmapDebug" type="MultiMeshInstance3D"]
+material_override = SubResource("StandardMaterial3D_53gmh")
+script = ExtResource("1_53gmh")

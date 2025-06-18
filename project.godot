@@ -19,6 +19,13 @@ config/icon="res://icon.svg"
 
 Heatmap="*res://Scripts/Utils/heatmap.gd"
 SmoothPolygon="*res://Scripts/Utils/smooth_polygon.gd"
+IslandGeneration="*res://Scripts/island_generation.gd"
+MountainGeneration="*res://Scripts/mountain_generation.gd"
+LakeGeneration="*res://Scripts/lake_generation.gd"
+ThreadPool="*res://Scripts/Utils/thread_pool.gd"
+MeshTree="*res://Scripts/Utils/mesh_tree.gd"
+RockGeneration="*res://Scripts/rock_generation.gd"
+TreeGeneration="*res://Scripts/tree_generation.gd"
 
 [editor_plugins]
 

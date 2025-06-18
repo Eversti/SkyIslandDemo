@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b5kg6mffodlad"]
 
-[ext_resource type="Shader" uid="uid://fe5utm2hrrap" path="res://island_height_based.gdshader" id="1_cyj51"]
+[ext_resource type="Shader" uid="uid://fe5utm2hrrap" path="res://Shaders/island_height_based.gdshader" id="1_cyj51"]
 
 [resource]
 render_priority = 0

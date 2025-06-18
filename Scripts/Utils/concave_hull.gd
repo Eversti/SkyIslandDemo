@@ -1,5 +1,4 @@
-class_name ConcaveHull
-extends Resource
+extends Node
 
 var triangle_was_removed = false
 
@@ -44,11 +43,11 @@ func get_delaunay_triangles(points):
 	var triangulate = Geometry2D.triangulate_delaunay(points)
 	var triangles = []
 	
-	for i in len(triangulate)/3:
+	for i in range(0, triangulate.size(), 3):
 		var triangle = PackedVector2Array()
 		
 		for n in range(3):
-			var point = Vector2(points[triangulate[(i * 3) + n]].x, points[triangulate[(i * 3) + n]].y)
+			var point = Vector2(points[triangulate[i + n]].x, points[triangulate[i + n]].y)
 			triangle.append(point)
 		
 		triangles.append(triangle)
