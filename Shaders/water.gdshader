@@ -16,7 +16,6 @@ uniform float border_width = 0.15;
 uniform float time_speed = 0.5;
 
 void fragment() {
-	// Animate noise over time
     float t = TIME * time_speed;
 	float distortion_val = texture(distortion_text, UV + vec2(0.1, 0.1) * t).r * distortion_intensity;
 	float noise_val = texture(noise_text, UV + vec2(0.05, 0.05) * t + distortion_val).r * noise_intensity;

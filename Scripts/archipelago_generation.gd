@@ -41,7 +41,6 @@ func gen_cycle():
 	generate_islands()
 
 func on_island_gen_complete(island_data):
-	#print(island_data.data.index)
 	mutex.lock()
 	islands[island_data.data.index] = island_data
 	mutex.unlock()
@@ -111,8 +110,8 @@ func generate_islands():
 		ThreadPool.add_task(generate_island.bind(index))
 
 func generate_island(i):
-	var shapeType = chooseRandFromArray(island_types, i)
 	print("Running task: ", i)
+	var shapeType = chooseRandFromArray(island_types, i)
 	var result = IslandGeneration.generate_island(noise, i, shapeType)
 	var island_data = result[0]
 	island_data.index = i
@@ -123,7 +122,6 @@ func generate_island(i):
 			island_node.children.append(peak_node)
 		
 	populate_island(island_data, island_node, i)
-	#print(island_node.children)
 	return {"tree": island_node, "data": island_data}
 
 func populate_island(island_data, island_node, index):
